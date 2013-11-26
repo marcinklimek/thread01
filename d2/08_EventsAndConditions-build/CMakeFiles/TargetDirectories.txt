@@ -1,0 +1,2 @@
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/CMakeFiles/08_EventsAndConditions.dir
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/CMakeFiles/libs.dir

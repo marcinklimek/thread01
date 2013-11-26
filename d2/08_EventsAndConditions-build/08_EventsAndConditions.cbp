@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="08_EventsAndConditions" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="08_EventsAndConditions">
+         <Option output="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/08_EventsAndConditions" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.7" />
+            <Add directory="/usr/include/c++/4.7/backward" />
+            <Add directory="/usr/include/c++/4.7/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 08_EventsAndConditions" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="08_EventsAndConditions/fast">
+         <Option output="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/08_EventsAndConditions" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/usr/include/c++/4.7" />
+            <Add directory="/usr/include/c++/4.7/backward" />
+            <Add directory="/usr/include/c++/4.7/x86_64-linux-gnu" />
+            <Add directory="/usr/include/x86_64-linux-gnu" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include" />
+            <Add directory="/usr/lib/gcc/x86_64-linux-gnu/4.7/include-fixed" />
+            <Add directory="/usr/local/include" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 08_EventsAndConditions/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="libs">
+         <Option working_dir="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 libs" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions-build/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions/events_and_conditions.cpp">
+      </Unit>
+      <Unit filename="/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>

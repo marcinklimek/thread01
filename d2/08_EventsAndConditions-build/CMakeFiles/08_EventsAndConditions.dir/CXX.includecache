@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/08_EventsAndConditions/events_and_conditions.cpp
+iostream
+-
+queue
+-
+boost/thread.hpp
+-
+boost/lambda/lambda.hpp
+-
+boost/lambda/bind.hpp
+-
+

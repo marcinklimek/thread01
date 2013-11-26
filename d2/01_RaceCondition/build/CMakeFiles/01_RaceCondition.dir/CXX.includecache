@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/01_RaceCondition/race_condition.cpp
+iostream
+-
+boost/thread.hpp
+-
+boost/date_time/posix_time/posix_time.hpp
+-
+
