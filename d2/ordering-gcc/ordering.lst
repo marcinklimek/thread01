@@ -1,0 +1,765 @@
+GAS LISTING /tmp/ccct3rBx.s 			page 1
+
+
+   1              		.file	"ordering.cpp"
+   2              		.intel_syntax noprefix
+   3              		.text
+   4              	.Ltext0:
+   5              		.align 2
+   6              		.p2align 4,,15
+   7              		.globl	_ZN15MersenneTwister7integerEv
+   9              	_ZN15MersenneTwister7integerEv:
+  10              	.LFB28:
+  11              		.file 1 "ordering.cpp"
+   1:ordering.cpp  **** #include <pthread.h>
+   2:ordering.cpp  **** #include <semaphore.h>
+   3:ordering.cpp  **** #include <stdio.h>
+   4:ordering.cpp  **** 
+   5:ordering.cpp  **** // Set either of these to 1 to prevent CPU reordering
+   6:ordering.cpp  **** #define USE_CPU_FENCE              0
+   7:ordering.cpp  **** #define USE_SINGLE_HW_THREAD       0  // Supported on Linux, but not Cygwin or PS3
+   8:ordering.cpp  **** 
+   9:ordering.cpp  **** #if USE_SINGLE_HW_THREAD
+  10:ordering.cpp  **** #include <sched.h>
+  11:ordering.cpp  **** #endif
+  12:ordering.cpp  **** 
+  13:ordering.cpp  **** 
+  14:ordering.cpp  **** //-------------------------------------
+  15:ordering.cpp  **** //  MersenneTwister
+  16:ordering.cpp  **** //  A thread-safe random number generator with good randomness
+  17:ordering.cpp  **** //  in a small number of instructions. We'll use it to introduce
+  18:ordering.cpp  **** //  random timing delays.
+  19:ordering.cpp  **** //-------------------------------------
+  20:ordering.cpp  **** #define MT_IA  397
+  21:ordering.cpp  **** #define MT_LEN 624
+  22:ordering.cpp  **** 
+  23:ordering.cpp  **** class MersenneTwister
+  24:ordering.cpp  **** {
+  25:ordering.cpp  ****     unsigned int m_buffer[MT_LEN];
+  26:ordering.cpp  ****     int m_index;
+  27:ordering.cpp  **** 
+  28:ordering.cpp  **** public:
+  29:ordering.cpp  ****     MersenneTwister(unsigned int seed);
+  30:ordering.cpp  ****     // Declare noinline so that the function call acts as a compiler barrier:
+  31:ordering.cpp  ****     unsigned int integer() __attribute__((noinline));
+  32:ordering.cpp  **** };
+  33:ordering.cpp  **** 
+  34:ordering.cpp  **** MersenneTwister::MersenneTwister(unsigned int seed)
+  35:ordering.cpp  **** {
+  36:ordering.cpp  ****     // Initialize by filling with the seed, then iterating
+  37:ordering.cpp  ****     // the algorithm a bunch of times to shuffle things up.
+  38:ordering.cpp  ****     for (int i = 0; i < MT_LEN; i++)
+  39:ordering.cpp  ****         m_buffer[i] = seed;
+  40:ordering.cpp  ****     m_index = 0;
+  41:ordering.cpp  ****     for (int i = 0; i < MT_LEN * 100; i++)
+  42:ordering.cpp  ****         integer();
+  43:ordering.cpp  **** }
+  44:ordering.cpp  **** 
+  45:ordering.cpp  **** unsigned int MersenneTwister::integer()
+  46:ordering.cpp  **** {
+  12              		.loc 1 46 0
+GAS LISTING /tmp/ccct3rBx.s 			page 2
+
+
+  13              		.cfi_startproc
+  14              	.LVL0:
+  15              	.LBB2:
+  47:ordering.cpp  ****     // Indices
+  48:ordering.cpp  ****     int i = m_index;
+  16              		.loc 1 48 0
+  17 0000 486387C0 		movsx	rax, DWORD PTR [rdi+2496]
+  17      090000
+  18              	.LVL1:
+  49:ordering.cpp  ****     int i2 = m_index + 1; if (i2 >= MT_LEN) i2 = 0; // wrap-around
+  19              		.loc 1 49 0
+  20 0007 BA000000 		mov	edx, 0
+  20      00
+  21 000c 8D4801   		lea	ecx, [rax+1]
+  22              	.LVL2:
+  50:ordering.cpp  ****     int j = m_index + MT_IA; if (j >= MT_LEN) j -= MT_LEN; // wrap-around
+  23              		.loc 1 50 0
+  24 000f 8DB08D01 		lea	esi, [rax+397]
+  24      0000
+  51:ordering.cpp  **** 
+  52:ordering.cpp  ****     // Twist
+  53:ordering.cpp  ****     unsigned int s = (m_buffer[i] & 0x80000000) | (m_buffer[i2] & 0x7fffffff);
+  25              		.loc 1 53 0
+  26 0015 448B0487 		mov	r8d, DWORD PTR [rdi+rax*4]
+  27 0019 4989C1   		mov	r9, rax
+  49:ordering.cpp  ****     int i2 = m_index + 1; if (i2 >= MT_LEN) i2 = 0; // wrap-around
+  28              		.loc 1 49 0
+  29 001c 81F97002 		cmp	ecx, 624
+  29      0000
+  30 0022 0F4DCA   		cmovge	ecx, edx
+  31              	.LVL3:
+  50:ordering.cpp  ****     int j = m_index + MT_IA; if (j >= MT_LEN) j -= MT_LEN; // wrap-around
+  32              		.loc 1 50 0
+  33 0025 8D901DFF 		lea	edx, [rax-227]
+  33      FFFF
+  34 002b 81FE7002 		cmp	esi, 624
+  34      0000
+  54:ordering.cpp  ****     unsigned int r = m_buffer[j] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+  55:ordering.cpp  ****     m_buffer[m_index] = r;
+  56:ordering.cpp  ****     m_index = i2;
+  35              		.loc 1 56 0
+  36 0031 898FC009 		mov	DWORD PTR [rdi+2496], ecx
+  36      0000
+  50:ordering.cpp  ****     int j = m_index + MT_IA; if (j >= MT_LEN) j -= MT_LEN; // wrap-around
+  37              		.loc 1 50 0
+  38 0037 0F4DF2   		cmovge	esi, edx
+  39              	.LVL4:
+  53:ordering.cpp  ****     unsigned int s = (m_buffer[i] & 0x80000000) | (m_buffer[i2] & 0x7fffffff);
+  40              		.loc 1 53 0
+  41 003a 4863D1   		movsx	rdx, ecx
+  42 003d 4181E000 		and	r8d, -2147483648
+  42      000080
+  43 0044 8B1497   		mov	edx, DWORD PTR [rdi+rdx*4]
+  54:ordering.cpp  ****     unsigned int r = m_buffer[j] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+  44              		.loc 1 54 0
+  45 0047 4863F6   		movsx	rsi, esi
+  53:ordering.cpp  ****     unsigned int s = (m_buffer[i] & 0x80000000) | (m_buffer[i2] & 0x7fffffff);
+GAS LISTING /tmp/ccct3rBx.s 			page 3
+
+
+  46              		.loc 1 53 0
+  47 004a 81E2FFFF 		and	edx, 2147483647
+  47      FF7F
+  48 0050 4409C2   		or	edx, r8d
+  49              	.LVL5:
+  54:ordering.cpp  ****     unsigned int r = m_buffer[j] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+  50              		.loc 1 54 0
+  51 0053 89D0     		mov	eax, edx
+  52 0055 D1EA     		shr	edx
+  53              	.LVL6:
+  54 0057 83E001   		and	eax, 1
+  55              	.LVL7:
+  56 005a 69C0DFB0 		imul	eax, eax, -1727483681
+  56      0899
+  57 0060 31D0     		xor	eax, edx
+  58 0062 3304B7   		xor	eax, DWORD PTR [rdi+rsi*4]
+  59              	.LVL8:
+  57:ordering.cpp  **** 
+  58:ordering.cpp  ****     // Swizzle
+  59:ordering.cpp  ****     r ^= (r >> 11);
+  60              		.loc 1 59 0
+  61 0065 89C2     		mov	edx, eax
+  55:ordering.cpp  ****     m_buffer[m_index] = r;
+  62              		.loc 1 55 0
+  63 0067 4289048F 		mov	DWORD PTR [rdi+r9*4], eax
+  64              		.loc 1 59 0
+  65 006b C1EA0B   		shr	edx, 11
+  66 006e 31C2     		xor	edx, eax
+  67              	.LVL9:
+  60:ordering.cpp  ****     r ^= (r << 7) & 0x9d2c5680UL;
+  68              		.loc 1 60 0
+  69 0070 89D0     		mov	eax, edx
+  70 0072 C1E007   		sal	eax, 7
+  71 0075 2580562C 		and	eax, -1658038656
+  71      9D
+  72 007a 31D0     		xor	eax, edx
+  73              	.LVL10:
+  61:ordering.cpp  ****     r ^= (r << 15) & 0xefc60000UL;
+  74              		.loc 1 61 0
+  75 007c 89C2     		mov	edx, eax
+  76 007e C1E20F   		sal	edx, 15
+  77 0081 81E20000 		and	edx, -272236544
+  77      C6EF
+  78 0087 31C2     		xor	edx, eax
+  79              	.LVL11:
+  62:ordering.cpp  ****     r ^= (r >> 18);
+  80              		.loc 1 62 0
+  81 0089 89D0     		mov	eax, edx
+  82 008b C1E812   		shr	eax, 18
+  83              	.LVL12:
+  84 008e 31D0     		xor	eax, edx
+  85              	.LVL13:
+  86              	.LBE2:
+  63:ordering.cpp  ****     return r;
+  64:ordering.cpp  **** }
+  87              		.loc 1 64 0
+  88 0090 C3       		ret
+GAS LISTING /tmp/ccct3rBx.s 			page 4
+
+
+  89              		.cfi_endproc
+  90              	.LFE28:
+  92 0091 90       		.align 2
+  93 0092 66666666 		.p2align 4,,15
+  93      662E0F1F 
+  93      84000000 
+  93      0000
+  94              		.globl	_ZN15MersenneTwisterC2Ej
+  96              	_ZN15MersenneTwisterC2Ej:
+  97              	.LFB26:
+  34:ordering.cpp  **** MersenneTwister::MersenneTwister(unsigned int seed)
+  98              		.loc 1 34 0
+  99              		.cfi_startproc
+ 100              	.LVL14:
+ 101 00a0 55       		push	rbp
+ 102              	.LCFI0:
+ 103              		.cfi_def_cfa_offset 16
+ 104              		.cfi_offset 6, -16
+ 105 00a1 31C0     		xor	eax, eax
+ 106 00a3 4889FD   		mov	rbp, rdi
+ 107 00a6 53       		push	rbx
+ 108              	.LCFI1:
+ 109              		.cfi_def_cfa_offset 24
+ 110              		.cfi_offset 3, -24
+ 111              	.LVL15:
+ 112 00a7 660F1F84 		.p2align 4,,10
+ 112      00000000 
+ 112      00
+ 113              		.p2align 3
+ 114              	.L6:
+ 115              	.LBB3:
+ 116              	.LBB4:
+  39:ordering.cpp  ****         m_buffer[i] = seed;
+ 117              		.loc 1 39 0 discriminator 2
+ 118 00b0 89740500 		mov	DWORD PTR [rbp+0+rax], esi
+ 119 00b4 4883C004 		add	rax, 4
+  38:ordering.cpp  ****     for (int i = 0; i < MT_LEN; i++)
+ 120              		.loc 1 38 0 discriminator 2
+ 121 00b8 483DC009 		cmp	rax, 2496
+ 121      0000
+ 122 00be 75F0     		jne	.L6
+ 123              	.LBE4:
+  40:ordering.cpp  ****     m_index = 0;
+ 124              		.loc 1 40 0
+ 125 00c0 C785C009 		mov	DWORD PTR [rbp+2496], 0
+ 125      00000000 
+ 125      0000
+ 126              	.LVL16:
+ 127 00ca BBC0F300 		mov	ebx, 62400
+ 127      00
+ 128              	.LVL17:
+ 129 00cf 90       		.p2align 4,,10
+ 130              		.p2align 3
+ 131              	.L7:
+ 132              	.LBB5:
+  42:ordering.cpp  ****         integer();
+ 133              		.loc 1 42 0 discriminator 2
+GAS LISTING /tmp/ccct3rBx.s 			page 5
+
+
+ 134 00d0 4889EF   		mov	rdi, rbp
+ 135 00d3 E8000000 		call	_ZN15MersenneTwister7integerEv
+ 135      00
+ 136              	.LVL18:
+  41:ordering.cpp  ****     for (int i = 0; i < MT_LEN * 100; i++)
+ 137              		.loc 1 41 0 discriminator 2
+ 138 00d8 83EB01   		sub	ebx, 1
+ 139 00db 75F3     		jne	.L7
+ 140              	.LBE5:
+ 141              	.LBE3:
+  43:ordering.cpp  **** }
+ 142              		.loc 1 43 0
+ 143 00dd 5B       		pop	rbx
+ 144              	.LCFI2:
+ 145              		.cfi_def_cfa_offset 16
+ 146 00de 5D       		pop	rbp
+ 147              	.LCFI3:
+ 148              		.cfi_def_cfa_offset 8
+ 149              	.LVL19:
+ 150 00df C3       		ret
+ 151              		.cfi_endproc
+ 152              	.LFE26:
+ 154              		.globl	_ZN15MersenneTwisterC1Ej
+ 155              		.set	_ZN15MersenneTwisterC1Ej,_ZN15MersenneTwisterC2Ej
+ 156              		.p2align 4,,15
+ 157              		.globl	_Z11thread2FuncPv
+ 159              	_Z11thread2FuncPv:
+ 160              	.LFB30:
+  65:ordering.cpp  **** 
+  66:ordering.cpp  **** 
+  67:ordering.cpp  **** //-------------------------------------
+  68:ordering.cpp  **** //  Main program, as decribed in the post
+  69:ordering.cpp  **** //-------------------------------------
+  70:ordering.cpp  **** sem_t beginSema1;
+  71:ordering.cpp  **** sem_t beginSema2;
+  72:ordering.cpp  **** sem_t endSema;
+  73:ordering.cpp  **** 
+  74:ordering.cpp  **** int X, Y;
+  75:ordering.cpp  **** int r1, r2;
+  76:ordering.cpp  **** 
+  77:ordering.cpp  **** void *thread1Func(void *param)
+  78:ordering.cpp  **** {
+  79:ordering.cpp  ****     MersenneTwister random(1);
+  80:ordering.cpp  ****     for (;;)
+  81:ordering.cpp  ****     {
+  82:ordering.cpp  ****         sem_wait(&beginSema1);  // Wait for signal
+  83:ordering.cpp  ****         while (random.integer() % 8 != 0) {}  // Random delay
+  84:ordering.cpp  **** 
+  85:ordering.cpp  ****         // ----- THE TRANSACTION! -----
+  86:ordering.cpp  ****         X = 1;
+  87:ordering.cpp  **** #if USE_CPU_FENCE
+  88:ordering.cpp  ****         asm volatile("mfence" ::: "memory");  // Prevent CPU reordering
+  89:ordering.cpp  **** #else
+  90:ordering.cpp  ****         //asm volatile("" ::: "memory");  // Prevent compiler reordering
+  91:ordering.cpp  **** #endif
+  92:ordering.cpp  ****         r1 = Y;
+  93:ordering.cpp  **** 
+GAS LISTING /tmp/ccct3rBx.s 			page 6
+
+
+  94:ordering.cpp  ****         sem_post(&endSema);  // Notify transaction complete
+  95:ordering.cpp  ****     }
+  96:ordering.cpp  ****     return NULL;  // Never returns
+  97:ordering.cpp  **** };
+  98:ordering.cpp  **** 
+  99:ordering.cpp  **** void *thread2Func(void *param)
+ 100:ordering.cpp  **** {
+ 161              		.loc 1 100 0
+ 162              		.cfi_startproc
+ 163              	.LVL20:
+ 164 00e0 4881ECD8 		sub	rsp, 2520
+ 164      090000
+ 165              	.LCFI4:
+ 166              		.cfi_def_cfa_offset 2528
+ 167              	.LBB6:
+ 101:ordering.cpp  ****     MersenneTwister random(2);
+ 168              		.loc 1 101 0
+ 169 00e7 BE020000 		mov	esi, 2
+ 169      00
+ 170 00ec 4889E7   		mov	rdi, rsp
+ 171              	.LVL21:
+ 172 00ef E8000000 		call	_ZN15MersenneTwisterC1Ej
+ 172      00
+ 173              	.LVL22:
+ 174              		.p2align 4,,10
+ 175 00f4 0F1F4000 		.p2align 3
+ 176              	.L14:
+ 102:ordering.cpp  ****     for (;;)
+ 103:ordering.cpp  ****     {
+ 104:ordering.cpp  ****         sem_wait(&beginSema2);  // Wait for signal
+ 177              		.loc 1 104 0
+ 178 00f8 BF000000 		mov	edi, OFFSET FLAT:beginSema2
+ 178      00
+ 179 00fd E8000000 		call	sem_wait
+ 179      00
+ 180              	.LVL23:
+ 181              		.p2align 4,,10
+ 182 0102 660F1F44 		.p2align 3
+ 182      0000
+ 183              	.L13:
+ 105:ordering.cpp  ****         while (random.integer() % 8 != 0) {}  // Random delay
+ 184              		.loc 1 105 0 discriminator 1
+ 185 0108 4889E7   		mov	rdi, rsp
+ 186 010b E8000000 		call	_ZN15MersenneTwister7integerEv
+ 186      00
+ 187              	.LVL24:
+ 188 0110 A807     		test	al, 7
+ 189 0112 75F4     		jne	.L13
+ 106:ordering.cpp  **** 
+ 107:ordering.cpp  ****         // ----- THE TRANSACTION! -----
+ 108:ordering.cpp  ****         Y = 1;
+ 109:ordering.cpp  **** #if USE_CPU_FENCE
+ 110:ordering.cpp  ****         asm volatile("mfence" ::: "memory");  // Prevent CPU reordering
+ 111:ordering.cpp  **** #else
+ 112:ordering.cpp  ****         //asm volatile("" ::: "memory");  // Prevent compiler reordering
+ 113:ordering.cpp  **** #endif
+ 114:ordering.cpp  ****         r2 = X;
+GAS LISTING /tmp/ccct3rBx.s 			page 7
+
+
+ 190              		.loc 1 114 0
+ 191 0114 8B050000 		mov	eax, DWORD PTR X[rip]
+ 191      0000
+ 115:ordering.cpp  **** 
+ 116:ordering.cpp  ****         sem_post(&endSema);  // Notify transaction complete
+ 192              		.loc 1 116 0
+ 193 011a BF000000 		mov	edi, OFFSET FLAT:endSema
+ 193      00
+ 108:ordering.cpp  ****         Y = 1;
+ 194              		.loc 1 108 0
+ 195 011f C7050000 		mov	DWORD PTR Y[rip], 1
+ 195      00000100 
+ 195      0000
+ 114:ordering.cpp  ****         r2 = X;
+ 196              		.loc 1 114 0
+ 197 0129 89050000 		mov	DWORD PTR r2[rip], eax
+ 197      0000
+ 198              		.loc 1 116 0
+ 199 012f E8000000 		call	sem_post
+ 199      00
+ 200              	.LVL25:
+ 102:ordering.cpp  ****     for (;;)
+ 201              		.loc 1 102 0
+ 202 0134 EBC2     		jmp	.L14
+ 203              	.LBE6:
+ 204              		.cfi_endproc
+ 205              	.LFE30:
+ 207 0136 662E0F1F 		.p2align 4,,15
+ 207      84000000 
+ 207      0000
+ 208              		.globl	_Z11thread1FuncPv
+ 210              	_Z11thread1FuncPv:
+ 211              	.LFB29:
+  78:ordering.cpp  **** {
+ 212              		.loc 1 78 0
+ 213              		.cfi_startproc
+ 214              	.LVL26:
+ 215 0140 4881ECD8 		sub	rsp, 2520
+ 215      090000
+ 216              	.LCFI5:
+ 217              		.cfi_def_cfa_offset 2528
+ 218              	.LBB7:
+  79:ordering.cpp  ****     MersenneTwister random(1);
+ 219              		.loc 1 79 0
+ 220 0147 BE010000 		mov	esi, 1
+ 220      00
+ 221 014c 4889E7   		mov	rdi, rsp
+ 222              	.LVL27:
+ 223 014f E8000000 		call	_ZN15MersenneTwisterC1Ej
+ 223      00
+ 224              	.LVL28:
+ 225              		.p2align 4,,10
+ 226 0154 0F1F4000 		.p2align 3
+ 227              	.L19:
+  82:ordering.cpp  ****         sem_wait(&beginSema1);  // Wait for signal
+ 228              		.loc 1 82 0
+ 229 0158 BF000000 		mov	edi, OFFSET FLAT:beginSema1
+GAS LISTING /tmp/ccct3rBx.s 			page 8
+
+
+ 229      00
+ 230 015d E8000000 		call	sem_wait
+ 230      00
+ 231              	.LVL29:
+ 232              		.p2align 4,,10
+ 233 0162 660F1F44 		.p2align 3
+ 233      0000
+ 234              	.L18:
+  83:ordering.cpp  ****         while (random.integer() % 8 != 0) {}  // Random delay
+ 235              		.loc 1 83 0 discriminator 1
+ 236 0168 4889E7   		mov	rdi, rsp
+ 237 016b E8000000 		call	_ZN15MersenneTwister7integerEv
+ 237      00
+ 238              	.LVL30:
+ 239 0170 A807     		test	al, 7
+ 240 0172 75F4     		jne	.L18
+  92:ordering.cpp  ****         r1 = Y;
+ 241              		.loc 1 92 0
+ 242 0174 8B050000 		mov	eax, DWORD PTR Y[rip]
+ 242      0000
+  94:ordering.cpp  ****         sem_post(&endSema);  // Notify transaction complete
+ 243              		.loc 1 94 0
+ 244 017a BF000000 		mov	edi, OFFSET FLAT:endSema
+ 244      00
+  86:ordering.cpp  ****         X = 1;
+ 245              		.loc 1 86 0
+ 246 017f C7050000 		mov	DWORD PTR X[rip], 1
+ 246      00000100 
+ 246      0000
+  92:ordering.cpp  ****         r1 = Y;
+ 247              		.loc 1 92 0
+ 248 0189 89050000 		mov	DWORD PTR r1[rip], eax
+ 248      0000
+  94:ordering.cpp  ****         sem_post(&endSema);  // Notify transaction complete
+ 249              		.loc 1 94 0
+ 250 018f E8000000 		call	sem_post
+ 250      00
+ 251              	.LVL31:
+  80:ordering.cpp  ****     for (;;)
+ 252              		.loc 1 80 0
+ 253 0194 EBC2     		jmp	.L19
+ 254              	.LBE7:
+ 255              		.cfi_endproc
+ 256              	.LFE29:
+ 258              		.section	.rodata.str1.8,"aMS",@progbits,1
+ 259              		.align 8
+ 260              	.LC0:
+ 261 0000 25642072 		.string	"%d reorders detected after %d iterations\n"
+ 261      656F7264 
+ 261      65727320 
+ 261      64657465 
+ 261      63746564 
+ 262              		.section	.text.startup,"ax",@progbits
+ 263              		.p2align 4,,15
+ 264              		.globl	main
+ 266              	main:
+ 267              	.LFB31:
+GAS LISTING /tmp/ccct3rBx.s 			page 9
+
+
+ 117:ordering.cpp  ****     }
+ 118:ordering.cpp  ****     return NULL;  // Never returns
+ 119:ordering.cpp  **** };
+ 120:ordering.cpp  **** 
+ 121:ordering.cpp  **** int main()
+ 122:ordering.cpp  **** {
+ 268              		.loc 1 122 0
+ 269              		.cfi_startproc
+ 270 0000 55       		push	rbp
+ 271              	.LCFI6:
+ 272              		.cfi_def_cfa_offset 16
+ 273              		.cfi_offset 6, -16
+ 274              	.LBB8:
+ 123:ordering.cpp  ****     // Initialize the semaphores
+ 124:ordering.cpp  ****     sem_init(&beginSema1, 0, 0);
+ 275              		.loc 1 124 0
+ 276 0001 31D2     		xor	edx, edx
+ 277 0003 31F6     		xor	esi, esi
+ 278 0005 BF000000 		mov	edi, OFFSET FLAT:beginSema1
+ 278      00
+ 125:ordering.cpp  ****     sem_init(&beginSema2, 0, 0);
+ 126:ordering.cpp  ****     sem_init(&endSema, 0, 0);
+ 127:ordering.cpp  **** 
+ 128:ordering.cpp  ****     // Spawn the threads
+ 129:ordering.cpp  ****     pthread_t thread1, thread2;
+ 130:ordering.cpp  ****     pthread_create(&thread1, NULL, thread1Func, NULL);
+ 131:ordering.cpp  ****     pthread_create(&thread2, NULL, thread2Func, NULL);
+ 132:ordering.cpp  **** 
+ 133:ordering.cpp  **** #if USE_SINGLE_HW_THREAD
+ 134:ordering.cpp  ****     // Force thread affinities to the same cpu core.
+ 135:ordering.cpp  ****     cpu_set_t cpus;
+ 136:ordering.cpp  ****     CPU_ZERO(&cpus);
+ 137:ordering.cpp  ****     CPU_SET(0, &cpus);
+ 138:ordering.cpp  ****     pthread_setaffinity_np(thread1, sizeof(cpu_set_t), &cpus);
+ 139:ordering.cpp  ****     pthread_setaffinity_np(thread2, sizeof(cpu_set_t), &cpus);
+ 140:ordering.cpp  **** #endif
+ 141:ordering.cpp  **** 
+ 142:ordering.cpp  ****     // Repeat the experiment ad infinitum
+ 143:ordering.cpp  ****     int detected = 0;
+ 279              		.loc 1 143 0
+ 280 000a 31ED     		xor	ebp, ebp
+ 281              	.LBE8:
+ 122:ordering.cpp  **** {
+ 282              		.loc 1 122 0
+ 283 000c 53       		push	rbx
+ 284              	.LCFI7:
+ 285              		.cfi_def_cfa_offset 24
+ 286              		.cfi_offset 3, -24
+ 287              	.LBB10:
+ 144:ordering.cpp  ****     for (int iterations = 1; ; iterations++)
+ 288              		.loc 1 144 0
+ 289 000d BB010000 		mov	ebx, 1
+ 289      00
+ 290              	.LBE10:
+ 122:ordering.cpp  **** {
+ 291              		.loc 1 122 0
+ 292 0012 4883EC18 		sub	rsp, 24
+GAS LISTING /tmp/ccct3rBx.s 			page 10
+
+
+ 293              	.LCFI8:
+ 294              		.cfi_def_cfa_offset 48
+ 295              	.LBB11:
+ 124:ordering.cpp  ****     sem_init(&beginSema1, 0, 0);
+ 296              		.loc 1 124 0
+ 297 0016 E8000000 		call	sem_init
+ 297      00
+ 298              	.LVL32:
+ 125:ordering.cpp  ****     sem_init(&beginSema2, 0, 0);
+ 299              		.loc 1 125 0
+ 300 001b 31D2     		xor	edx, edx
+ 301 001d 31F6     		xor	esi, esi
+ 302 001f BF000000 		mov	edi, OFFSET FLAT:beginSema2
+ 302      00
+ 303 0024 E8000000 		call	sem_init
+ 303      00
+ 304              	.LVL33:
+ 126:ordering.cpp  ****     sem_init(&endSema, 0, 0);
+ 305              		.loc 1 126 0
+ 306 0029 31D2     		xor	edx, edx
+ 307 002b 31F6     		xor	esi, esi
+ 308 002d BF000000 		mov	edi, OFFSET FLAT:endSema
+ 308      00
+ 309 0032 E8000000 		call	sem_init
+ 309      00
+ 310              	.LVL34:
+ 130:ordering.cpp  ****     pthread_create(&thread1, NULL, thread1Func, NULL);
+ 311              		.loc 1 130 0
+ 312 0037 31C9     		xor	ecx, ecx
+ 313 0039 BA000000 		mov	edx, OFFSET FLAT:_Z11thread1FuncPv
+ 313      00
+ 314 003e 31F6     		xor	esi, esi
+ 315 0040 4889E7   		mov	rdi, rsp
+ 316 0043 E8000000 		call	pthread_create
+ 316      00
+ 317              	.LVL35:
+ 131:ordering.cpp  ****     pthread_create(&thread2, NULL, thread2Func, NULL);
+ 318              		.loc 1 131 0
+ 319 0048 488D7C24 		lea	rdi, [rsp+8]
+ 319      08
+ 320 004d 31C9     		xor	ecx, ecx
+ 321 004f BA000000 		mov	edx, OFFSET FLAT:_Z11thread2FuncPv
+ 321      00
+ 322 0054 31F6     		xor	esi, esi
+ 323 0056 E8000000 		call	pthread_create
+ 323      00
+ 324              	.LVL36:
+ 325 005b EB06     		jmp	.L24
+ 326              	.LVL37:
+ 327 005d 0F1F00   		.p2align 4,,10
+ 328              		.p2align 3
+ 329              	.L23:
+ 330              	.LBB9:
+ 331              		.loc 1 144 0
+ 332 0060 83C301   		add	ebx, 1
+ 333              	.LVL38:
+ 334              	.L24:
+GAS LISTING /tmp/ccct3rBx.s 			page 11
+
+
+ 145:ordering.cpp  ****     {
+ 146:ordering.cpp  ****         // Reset X and Y
+ 147:ordering.cpp  ****         X = 0;
+ 148:ordering.cpp  ****         Y = 0;
+ 149:ordering.cpp  ****         // Signal both threads
+ 150:ordering.cpp  ****         sem_post(&beginSema1);
+ 335              		.loc 1 150 0
+ 336 0063 BF000000 		mov	edi, OFFSET FLAT:beginSema1
+ 336      00
+ 147:ordering.cpp  ****         X = 0;
+ 337              		.loc 1 147 0
+ 338 0068 C7050000 		mov	DWORD PTR X[rip], 0
+ 338      00000000 
+ 338      0000
+ 148:ordering.cpp  ****         Y = 0;
+ 339              		.loc 1 148 0
+ 340 0072 C7050000 		mov	DWORD PTR Y[rip], 0
+ 340      00000000 
+ 340      0000
+ 341              		.loc 1 150 0
+ 342 007c E8000000 		call	sem_post
+ 342      00
+ 343              	.LVL39:
+ 151:ordering.cpp  ****         sem_post(&beginSema2);
+ 344              		.loc 1 151 0
+ 345 0081 BF000000 		mov	edi, OFFSET FLAT:beginSema2
+ 345      00
+ 346 0086 E8000000 		call	sem_post
+ 346      00
+ 347              	.LVL40:
+ 152:ordering.cpp  ****         // Wait for both threads
+ 153:ordering.cpp  ****         sem_wait(&endSema);
+ 348              		.loc 1 153 0
+ 349 008b BF000000 		mov	edi, OFFSET FLAT:endSema
+ 349      00
+ 350 0090 E8000000 		call	sem_wait
+ 350      00
+ 351              	.LVL41:
+ 154:ordering.cpp  ****         sem_wait(&endSema);
+ 352              		.loc 1 154 0
+ 353 0095 BF000000 		mov	edi, OFFSET FLAT:endSema
+ 353      00
+ 354 009a E8000000 		call	sem_wait
+ 354      00
+ 355              	.LVL42:
+ 155:ordering.cpp  ****         // Check if there was a simultaneous reorder
+ 156:ordering.cpp  ****         if (r1 == 0 && r2 == 0)
+ 356              		.loc 1 156 0
+ 357 009f 8B150000 		mov	edx, DWORD PTR r1[rip]
+ 357      0000
+ 358 00a5 85D2     		test	edx, edx
+ 359 00a7 75B7     		jne	.L23
+ 360              		.loc 1 156 0 is_stmt 0 discriminator 1
+ 361 00a9 8B050000 		mov	eax, DWORD PTR r2[rip]
+ 361      0000
+ 362 00af 85C0     		test	eax, eax
+ 363 00b1 75AD     		jne	.L23
+GAS LISTING /tmp/ccct3rBx.s 			page 12
+
+
+ 157:ordering.cpp  ****         {
+ 158:ordering.cpp  ****             detected++;
+ 364              		.loc 1 158 0 is_stmt 1
+ 365 00b3 83C501   		add	ebp, 1
+ 366              	.LVL43:
+ 159:ordering.cpp  ****             printf("%d reorders detected after %d iterations\n", detected, iterations);
+ 367              		.loc 1 159 0
+ 368 00b6 89DA     		mov	edx, ebx
+ 369 00b8 BF000000 		mov	edi, OFFSET FLAT:.LC0
+ 369      00
+ 370 00bd 89EE     		mov	esi, ebp
+ 371 00bf 31C0     		xor	eax, eax
+ 372 00c1 E8000000 		call	printf
+ 372      00
+ 373              	.LVL44:
+ 374 00c6 EB98     		jmp	.L23
+ 375              	.LBE9:
+ 376              	.LBE11:
+ 377              		.cfi_endproc
+ 378              	.LFE31:
+ 380              		.globl	r2
+ 381              		.bss
+ 382              		.align 4
+ 385              	r2:
+ 386 0000 00000000 		.zero	4
+ 387              		.globl	r1
+ 388              		.align 4
+ 391              	r1:
+ 392 0004 00000000 		.zero	4
+ 393              		.globl	Y
+ 394              		.align 4
+ 397              	Y:
+ 398 0008 00000000 		.zero	4
+ 399              		.globl	X
+ 400              		.align 4
+ 403              	X:
+ 404 000c 00000000 		.zero	4
+ 405              		.globl	endSema
+ 406 0010 00000000 		.align 32
+ 406      00000000 
+ 406      00000000 
+ 406      00000000 
+ 409              	endSema:
+ 410 0020 00000000 		.zero	32
+ 410      00000000 
+ 410      00000000 
+ 410      00000000 
+ 410      00000000 
+ 411              		.globl	beginSema2
+ 412              		.align 32
+ 415              	beginSema2:
+ 416 0040 00000000 		.zero	32
+ 416      00000000 
+ 416      00000000 
+ 416      00000000 
+ 416      00000000 
+ 417              		.globl	beginSema1
+GAS LISTING /tmp/ccct3rBx.s 			page 13
+
+
+ 418              		.align 32
+ 421              	beginSema1:
+ 422 0060 00000000 		.zero	32
+ 422      00000000 
+ 422      00000000 
+ 422      00000000 
+ 422      00000000 
+ 423              		.text
+ 424              	.Letext0:
+ 425              		.file 2 "/usr/include/x86_64-linux-gnu/bits/types.h"
+ 426              		.file 3 "/usr/lib/gcc/x86_64-linux-gnu/4.7/include/stddef.h"
+ 427              		.file 4 "/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h"
+ 428              		.file 5 "/usr/include/x86_64-linux-gnu/bits/semaphore.h"
+ 429              		.file 6 "/usr/include/libio.h"
+ 430              		.file 7 "/usr/include/stdio.h"
+ 431              		.file 8 "/usr/include/semaphore.h"
+ 432              		.file 9 "/usr/include/pthread.h"
+GAS LISTING /tmp/ccct3rBx.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ordering.cpp
+     /tmp/ccct3rBx.s:9      .text:0000000000000000 _ZN15MersenneTwister7integerEv
+     /tmp/ccct3rBx.s:96     .text:00000000000000a0 _ZN15MersenneTwisterC2Ej
+     /tmp/ccct3rBx.s:96     .text:00000000000000a0 _ZN15MersenneTwisterC1Ej
+     /tmp/ccct3rBx.s:159    .text:00000000000000e0 _Z11thread2FuncPv
+     /tmp/ccct3rBx.s:415    .bss:0000000000000040 beginSema2
+     /tmp/ccct3rBx.s:403    .bss:000000000000000c X
+     /tmp/ccct3rBx.s:409    .bss:0000000000000020 endSema
+     /tmp/ccct3rBx.s:397    .bss:0000000000000008 Y
+     /tmp/ccct3rBx.s:385    .bss:0000000000000000 r2
+     /tmp/ccct3rBx.s:210    .text:0000000000000140 _Z11thread1FuncPv
+     /tmp/ccct3rBx.s:421    .bss:0000000000000060 beginSema1
+     /tmp/ccct3rBx.s:391    .bss:0000000000000004 r1
+     /tmp/ccct3rBx.s:266    .text.startup:0000000000000000 main
+
+UNDEFINED SYMBOLS
+sem_wait
+sem_post
+sem_init
+pthread_create
+printf
