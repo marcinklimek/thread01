@@ -7,7 +7,7 @@ ADD_DEFINITIONS("-std=gnu++11")
 
 add_executable(mockio main.cpp)
 
-target_link_libraries( mockio stdc++ pthread boost_thread boost_system boost_date_time)
+target_link_libraries( mockio stdc++ pthread boost_thread boost_system boost_date_time )
 
 install(TARGETS mockio RUNTIME DESTINATION bin )
 

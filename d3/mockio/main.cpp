@@ -196,7 +196,7 @@ struct MockIO
             if ( receive_queue[id].try_pop( iod ) )
             {
                 std::cout << "call completion handler "
-                          << "    " << boost::posix_time::to_simple_string( processing_delay ).c_str()
+                          << "    " << boost::posix_time::to_simple_string(  boost::get_system_time() ).c_str()
                           << std::endl;
 
                 completion_handlers[id]( iod.data );
