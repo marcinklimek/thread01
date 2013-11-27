@@ -13,7 +13,7 @@ class BankAccount
 private:
 	const int id_;
 	double balance_;
-	boost::mutex mutex_;
+	mutable boost::mutex mutex_;
 public:
 	BankAccount(int id, double balance) : id_(id), balance_(balance)
 	{
@@ -21,9 +21,13 @@ public:
 
 	void transfer(BankAccount& to, double amount)
 	{
-        	boost::unique_lock<boost::mutex> guard_from(this->mutex_);
-        	boost::thread::yield();
-       	 	boost::unique_lock<boost::mutex> guard_to(to.mutex_);
+        //boost::unique_lock<boost::mutex> guard_from(this->mutex_, boost::defer_lock);
+        //boost::unique_lock<boost::mutex> guard_to(to.mutex_, boost::defer_lock);
+        //boost::lock(guard_from, guard_to);
+		
+        boost::unique_lock<boost::mutex> guard_from(this->mutex_);
+        //boost::thread::yield();
+        boost::unique_lock<boost::mutex> guard_to(to.mutex_);
 
 		this->balance_ -= amount;
 		to.balance_ += amount;

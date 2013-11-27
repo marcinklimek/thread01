@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export MUDFLAP_OPTIONS="-mode-check -collect-stats"
+
+../dangling_reference

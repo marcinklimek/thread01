@@ -1,0 +1,2 @@
+#!/bin/bash
+./tsan.sh ../build/03_DanglingReference  > /home/user/workspace/vgrnd-mem.log 2>&1

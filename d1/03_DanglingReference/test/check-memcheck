@@ -1,0 +1,13 @@
+#!/bin/bash
+#--log-file=/home/user/workspace/vgrnd-mem-$(date +%F-%H:%M:%S).log \
+valgrind \
+	--log-file=/home/user/workspace/vgrnd-mem.log \
+	--time-stamp=yes \
+	--tool=memcheck \
+	--show-reachable=yes \
+	--undef-value-errors=no \
+	--trace-children=yes \
+	--run-libc-freeres=yes \
+	--leak-check=full \
+	../build/03_DanglingReference
+

@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/start.dir/simple_threads.cpp.o  -o start -rdynamic -lstdc++ -lpthread -lboost_thread -lboost_system 

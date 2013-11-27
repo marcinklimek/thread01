@@ -1,0 +1,11 @@
+get_filename_component(ProjectId ${CMAKE_SOURCE_DIR} NAME)
+string(REPLACE " " "_" ProjectId ${ProjectId})
+project(${ProjectId})
+cmake_minimum_required(VERSION 2.8)
+aux_source_directory(. SRC_LIST)
+add_executable(${PROJECT_NAME} ${SRC_LIST})
+ADD_DEFINITIONS("-std=c++0x -fpermissive -Ofast")
+target_link_libraries( ${PROJECT_NAME} stdc++ pthread boost_thread boost_system boost_filesystem)
+file(GLOB libs_SRC "*.h" "*.hpp")
+add_custom_target(libs SOURCES ${libs_SRC})
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+valgrind \
+	 --log-file-exactly=/home/user/workspace/vgrnd-mem-$(date +%F-%H:%M:%S).log \
+	--time-stamp=yes \
+	--tool=drd \
+	--gen-suppressions=yes \
+	../build/03_DanglingReference
+

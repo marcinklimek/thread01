@@ -1,1 +1,0 @@
-/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d2/start-build/CMakeFiles/start.dir

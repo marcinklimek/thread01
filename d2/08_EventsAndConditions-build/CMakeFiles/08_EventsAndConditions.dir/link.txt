@@ -1,1 +1,0 @@
-/usr/bin/c++       CMakeFiles/08_EventsAndConditions.dir/events_and_conditions.cpp.o  -o 08_EventsAndConditions -rdynamic -lstdc++ -lpthread -lboost_thread -lboost_system 

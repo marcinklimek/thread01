@@ -11,54 +11,72 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 
+boost::mutex mutex;
+std::queue<int> data_queue;
+boost::condition_variable data_cond;
 
-boost::barrier br(3);
+boost::mutex cm;
 
-void foo(int id)
+
+void process_data(int data)
 {
-    while(1)
-    {
-        std::cout << "Start " << id << std::endl;
-
-        br.wait();
-
-
-        std::cout << "After wait "<< id << std::endl;
-        boost::this_thread::sleep( boost::posix_time::millisec(450));
-
-    }
+	cm.lock();
+	std::cout << "Processing data : " << data << std::endl;
+	cm.unlock();
+	boost::this_thread::sleep(boost::posix_time::milliseconds(1500));
 }
 
-void f(boost::barrier& b)
+void data_preparation_thread()
 {
-    //boost::this_thread::sleep( boost::posix_time::millisec(50));
-    b.wait();
-    //boost::this_thread::sleep( boost::posix_time::millisec(50));
+	boost::unique_lock<boost::mutex> lk(mutex, boost::defer_lock);
+	for (int i = 0; i < 10; ++i)
+	{
+		int data = i;
+		lk.lock();
+		data_queue.push(data);
+		data_cond.notify_one();
+		lk.unlock();
+		cm.lock();
+		std::cout << "Pushing a value: " << data << std::endl;
+		cm.unlock();
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+	}
+
+	lk.lock();
+	data_queue.push(-1);
+	data_cond.notify_one();
 }
 
-void test_2()
+void data_processing_thread()
 {
-    boost::barrier b(2);
+	while(true)
+	{
+		boost::unique_lock<boost::mutex> lk(mutex);
 
-    boost::thread t(f, boost::ref(b));
-    b.wait();
+		while ( data_queue.empty() )
+			data_cond.wait(lk );
+			
+		//data_cond.wait(lk, !boost::bind(&std::queue<int>::empty, boost::ref(data_queue)));
+		
+		int data = data_queue.front();
+		data_queue.pop();
+		lk.unlock();
 
-    t.join();
+		if (data == -1)
+		{
+			std::cout << "End of processing..." << std::endl;
+			break;
+		}
+
+		process_data(data);
+	}
 }
-
-
 
 int main()
 {
-    for(int i=0; i<1000; i++)
-        test_2();
-//    boost::thread thd_1(foo, 1);
-//    boost::thread thd_2(foo, 2 );
-//    boost::thread thd_3(foo, 3);
-//    boost::thread thd_4(foo, 4);
+	boost::thread thd_producer(data_preparation_thread);
+	boost::thread thd_consumer(data_processing_thread);
 
-//    thd_1.join();
-//    thd_2.join();
-//    thd_3.join();
-//    thd_4.join();
+	thd_producer.join();
+	thd_consumer.join();
 }
