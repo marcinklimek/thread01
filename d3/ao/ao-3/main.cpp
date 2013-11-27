@@ -65,6 +65,11 @@ typedef int Data;
 
 class Document {
 public:
+
+    void Save( string filename ) {
+            cout << "Saving " << filename << endl;
+        }
+
     void Save( string filename ) { a.Send( [=] {
             cout << "Saving " << filename << endl;
         } ); }
