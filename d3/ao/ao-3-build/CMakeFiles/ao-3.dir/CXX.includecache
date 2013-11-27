@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d3/ao/ao-3/main.cpp
+iostream
+-
+memory
+-
+functional
+-
+thread
+-
+string
+-
+future
+-
+thread_safe_queue.hpp
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d3/ao/ao-3/thread_safe_queue.hpp
+
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d3/ao/ao-3/thread_safe_queue.hpp
+queue
+-
+boost/thread.hpp
+-
+boost/lambda/lambda.hpp
+-
+boost/lambda/bind.hpp
+-
+

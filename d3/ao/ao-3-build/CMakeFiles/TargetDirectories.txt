@@ -1,0 +1,2 @@
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d3/ao/ao-3-build/CMakeFiles/ao-3.dir
+/home/developer/workspace/NSN_25_11/multithreaded-distributed/cpp_multithreading_Wroclaw_25_2013_students/d3/ao/ao-3-build/CMakeFiles/libs.dir
